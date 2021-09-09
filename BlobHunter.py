@@ -4,7 +4,6 @@ from azure.identity import DefaultAzureCredential
 from azure.mgmt.resource import SubscriptionClient, ResourceManagementClient
 from azure.mgmt.storage import StorageManagementClient
 from azure.storage.blob import BlobServiceClient, ContainerClient
-from azure.core.exceptions import ClientAuthenticationError
 import subprocess
 import csv
 import os
