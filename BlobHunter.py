@@ -1,30 +1,17 @@
 import azure.core.exceptions
 from datetime import date
-from azure.identity import AzureCliCredential
+from azure.identity import DefaultAzureCredential
 from azure.mgmt.resource import SubscriptionClient, ResourceManagementClient
 from azure.mgmt.storage import StorageManagementClient
 from azure.storage.blob import BlobServiceClient, ContainerClient
+from azure.core.exceptions import ClientAuthenticationError
 import subprocess
 import csv
 import os
 
 ENDPOINT_URL = '{}.blob.core.windows.net'
 CONTAINER_URL = '{}.blob.core.windows.net/{}/'
-EXTENSIONS = ["txt", "csv", "pdf", "docx", "xlsx"]
-
-
-def get_credentials():
-    try:
-        username = subprocess.check_output("az account show --query user.name", shell=True,
-                                           stderr=subprocess.DEVNULL).decode("utf-8")
-
-    except subprocess.CalledProcessError:
-        subprocess.check_output("az login", shell=True, stderr=subprocess.DEVNULL)
-        username = subprocess.check_output("az account show --query user.name", shell=True,
-                                           stderr=subprocess.DEVNULL).decode("utf-8")
-
-    print("[+] Logged in as user {}".format(username.replace('"', '').replace("\n", '')), flush=True)
-    return AzureCliCredential()
+EXTENSIONS = ["txt", "csv", "pdf", "docx", "xlsx", "bacpac"]
 
 
 def get_tenants_and_subscriptions(creds):
@@ -181,19 +168,19 @@ def count_files_extensions(files, extensions):
 
 def print_logo():
     logo = '''
--------------------------------------------------------------    
-    
-    ______ _       _     _   _             _            
-    | ___ \ |     | |   | | | |           | |           
-    | |_/ / | ___ | |__ | |_| |_   _ _ __ | |_ ___ _ __ 
+-------------------------------------------------------------
+
+    ______ _       _     _   _             _
+    | ___ \ |     | |   | | | |           | |
+    | |_/ / | ___ | |__ | |_| |_   _ _ __ | |_ ___ _ __
     | ___ \ |/ _ \| '_ \|  _  | | | | '_ \| __/ _ \ '__|
-    | |_/ / | (_) | |_) | | | | |_| | | | | ||  __/ |   
+    | |_/ / | (_) | |_) | | | | |_| | | | | ||  __/ |
     \____/|_|\___/|_.__/\_| |_/\__,_|_| |_|\__\___|_|
-                                                                  
--------------------------------------------------------------  
+
+-------------------------------------------------------------
                     Author: Daniel Niv
-------------------------------------------------------------- 
-                                       
+-------------------------------------------------------------
+
     '''
 
     print(logo, flush=True)
@@ -201,7 +188,7 @@ def print_logo():
 
 def main():
     print_logo()
-    credentials = get_credentials()
+    credentials = DefaultAzureCredential()
     delete_csv()
 
     if credentials is None:
